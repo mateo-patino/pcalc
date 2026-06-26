@@ -28,16 +28,17 @@ tokens_status create_token_from_str(const char *str, token_t *addr) {
     }
 
     /* Check if 'str' is a valid number */
-    if (is_number(str)) {
-        /* TODO: tokenize */
+    int base;
+    if (is_number(str, &base)) {
+        /* TODO */
     }
     else {
+        /* errno could also be EINVAL ('str' is not a number) but that doesn't mean the string 
+         * is invalid. The string could be a non-numeric token, hence we continue checking.
+         */
         if (errno == ERANGE) {
             return TOKENS_ULL_OVERFLOW;
         }
-        /* errno could also be EINVAL ('str' is not a number) but that doesn't mean the string 
-        * is invalid. The string could be a non-numeric token.
-        */
     }
 
   /* TODO */
@@ -46,13 +47,12 @@ tokens_status create_token_from_str(const char *str, token_t *addr) {
 }
 
 
-bool is_number(const char *str) {
-    if (str == NULL || strlen(str) == 0) {
+bool is_number(const char *str, int *base) {
+    if (!str || strlen(str) == 0) {
         return false;
     }
     char *endptr = NULL;
     unsigned long long result;
-    bool is_octal = false;
 
     errno = 0;
     result = strtoull(str, &endptr, 10);
@@ -61,12 +61,26 @@ bool is_number(const char *str) {
         return false;
     }
     else if (*endptr == '\0') {
+        /* A leading 0 signals an octal (not inferred by strtoull by default, which skips the leading zero) */
         if (*str == '0') {
             errno = 0;
             result = strtoull(str, &endptr, 8);
+            if (errno == 0) {
+                if (base) {
+                    *base = 8;
+                }
+                return true;
+            }
+            return false;
         }
-        /* Decimal or octal value within range */
-        return false ? errno == ERANGE : true;
+        /* Decimal */
+        if (errno == 0) {
+            if (base) {
+                *base = 10;
+            }
+            return true;
+        }
+        return false;    
     }
     else if ((int)(endptr - str) == 1) {
         /* Check for bases prefixed by 0b and 0x */

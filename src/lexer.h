@@ -39,9 +39,11 @@ void print_token_error(tokens_status status);
 /*
 * Returns true if 'str' represents a valid (64-bit unsigned) number and false otherwise.
 * If false is returned, errno will be set to ERANGE when the string is numerical but too
-* large to fit in an unsigned 64-bit integer and to EINVAL when the string is not a valid
-* base 2, 8, 10, or 16 number.
+* large to fit in an unsigned 64-bit integer. 
+
+If 'base' is not NULL and the integer is valid, the base of the integer is stored in 
+'base'. If 'str' was invalid, 'base' is not modified.
 */
-bool is_number(const char *str);
+bool is_number(const char *str, int *base);
 
 #endif
