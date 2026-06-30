@@ -115,25 +115,26 @@ int main(int argc, char** argv) {
     tokens_status tok_status;
     char *invalid = NULL;
 
+    /* Valid ONLY when tokenizing from string instead of argv. Declared here to extend 'string' 
+     * lifetime until print_token_error attempts to access 'invalid', which would point to 'string' */
+    size_t string_len = strlen(argv[optind]); 
+    char string_buf[string_len + 1]; 
+
     if (tokenize_argv) {
         argv += optind;
         tok_status = create_tokens_from_argv(argv, tokens, &invalid);
     }
     else {
-        size_t len = strlen(argv[optind]); 
-        char string[len + 1]; 
-        strncpy(string, argv[optind], len + 1);
-        string[len] = '\0';
-        tok_status = create_tokens_from_string(string, tokens, &invalid);
+        strncpy(string_buf, argv[optind], string_len + 1);
+        string_buf[string_len] = '\0';
+        tok_status = create_tokens_from_string(string_buf, tokens, &invalid);
     }
 
     if (tok_status != TOKENS_OK) {
-        print_token_error(tok_status);
-        if (invalid) {
-            fprintf(stderr, "'%s'", invalid);
-        }
+        print_token_error(tok_status, invalid);
         return EXIT_FAILURE;
     }
+
 
     /* Step 1) complete! Token array ready! */ 
     
