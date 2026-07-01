@@ -36,6 +36,12 @@ bool free_token_obj(token_t *tok);
 int free_tokens_invalid(token_t *tok);
 
 
+/* 
+* Prints a token_t's information in a readable format to stdout.
+*/
+void print_token(const token_t *tok, bool add_newline);
+
+
 /* Supported operations */
 typedef enum {
     ADD,

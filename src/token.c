@@ -1,13 +1,14 @@
 #include "token.h"
 
+#include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
-
+#include <inttypes.h>
 
 const char* const operation_labels[NUM_OP][SYNONYMS_PER_OP] = {
     [ADD] = {"add", "plus", "+"},
     [SUB] = {"sub", "minus", "-"},
-    [MUL] = {"mul", "times", "x"},
+    [MUL] = {"mul", "times", "*"},
     [DIV] = {"div", "over", "/"}
 };
 
@@ -78,4 +79,55 @@ int free_tokens_invalid(token_t *tok) {
         ptr++;
     }
     return count;
+}
+
+
+void print_token(const token_t *tok, bool add_newline) {
+    if (!tok) {
+        return;
+    }
+
+    /* Operand print */
+    if (tok->type == OPERAND) {
+        operand_t *operand = (operand_t *)tok->obj;
+        operation_type op = operand->op;
+        switch(op) {
+            case ADD:
+                fprintf(stdout, "ADD");
+                break;
+            case SUB:
+                fprintf(stdout, "SUB");
+                break;
+            case MUL:
+                fprintf(stdout, "MUL");
+                break;
+            case DIV:
+                fprintf(stdout, "DIV");
+                break;
+            case NUM_OP:
+                break;
+        }
+    }
+    /* Number print */
+    else if (tok->type == NUMBER) {
+        number_t *number = tok->obj;
+        value_t val = number->value;
+        int base = number->base;
+        fprintf(stdout, "NUM(%" PRIu64 ", %i)", val, base); /* PRIu64 is a macro for the identifier of uint64 */
+    }
+    /* Parentheses print */
+    else if (tok->type == LPAREN) {
+        fprintf(stdout, "LP");
+    }
+    else if(tok->type == RPAREN) {
+        fprintf(stdout, "RP");
+    }
+    /* Invalid token print */
+    else if (tok->type == INVALID_TOKEN) {
+        fprintf(stdout, "INVAL");
+    }
+
+    if (add_newline) {
+        fprintf(stdout, "\n");
+    }
 }
