@@ -1,4 +1,0 @@
-CompileFlags:
-  Add:
-    - -Isrc
-    - -std=c23
