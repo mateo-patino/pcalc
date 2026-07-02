@@ -13,6 +13,7 @@ CPPFLAGS = -Isrc
 
 APP_TARGET = pcalc
 TEST_TARGET = pcalc_tests
+COMPILE_DB = compile_commands.json
 
 SRC_DIR = src
 TEST_DIR = tests
@@ -25,10 +26,10 @@ APP_OBJS_MAINLESS := $(filter-out $(OBJ_DIR)/main.o,$(APP_OBJS))
 TEST_SRCS = $(wildcard $(TEST_DIR)/*.c)
 TEST_OBJS = $(TEST_SRCS:$(TEST_DIR)/%.c=$(OBJ_DIR)/%.o)
 
-COMPILE.c = $(CC) $(CPPFLAGS) $(CFLAGS) 
+COMPILE.c = $(CC) $(CPPFLAGS) $(CFLAGS)
 LINK = $(CC)
 
-all: $(APP_TARGET)
+all: $(COMPILE_DB) $(APP_TARGET)
 test: $(TEST_TARGET)
 	./$(TEST_TARGET)
 
@@ -51,6 +52,26 @@ $(OBJ_DIR)/%.o: $(TEST_DIR)/%.c
 	mkdir -p $(OBJ_DIR)
 	# The -MMD and -MP flags create a .d file with the dependencies of build/%.o
 	$(COMPILE.c) -MMD -MP -c $< -o $@
+
+$(COMPILE_DB):
+	# We close this brace block in the else block next iteration
+	# Only the last object doesn't get closed here but outside the loop
+	first=0; \
+	echo "[" > $@; \
+	for src in $(APP_SRCS) $(TEST_SRCS); do \
+		if [ $$first -eq 0 ]; then \
+			first=1; \
+		else \
+			echo "	}," >> $@; \
+		fi; \
+		echo "	{" >> $@; \
+		echo "		\"directory\": \"$(CURDIR)\"," >> $@; \
+		echo "		\"command\": \"$(COMPILE.c) -c $$src -o _\"," >> $@; \
+		echo "		\"file\": \"$(CURDIR)/$$src\"" >> $@; \
+	done; \
+	echo "	}" >> $@; \
+	echo "]" >> $@
+
 
 clean:
 	rm -rf $(OBJ_DIR) $(APP_TARGET) $(TEST_TARGET)
