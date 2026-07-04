@@ -53,6 +53,11 @@ tokens_status create_tokens_from_string(char *str, token_t *addr, char **invalid
 tokens_status create_token_from_str(const char *str, token_t *addr);
 
 
+/*
+* Returns true if 'str' contains an en-dash, em-dash, or hyphen.
+*/
+bool has_dash(const char *str);
+
 /* 
 * Prints an error message to stderr given a tokens_status code. 
 */

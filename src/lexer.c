@@ -123,6 +123,20 @@ tokens_status create_token_from_str(const char *str, token_t *addr) {
 }
 
 
+bool has_dash(const char *str) {
+    if (!str || strlen(str) == 0) {
+        return false;
+    }
+    size_t len = strlen(str);
+    for (size_t i = 0; i < len; i++) {
+        if (str[i] == '-' || strcmp(str, "–") == 0 || strcmp(str, "—") == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
 void print_token_error(tokens_status status, const char *msg) {
     if (!msg) {
         msg = "";   
@@ -153,6 +167,7 @@ bool is_number(const char *str, int *base, value_t *val) {
     if (!str || strlen(str) == 0) {
         return false;
     }
+
     char *endptr = NULL;
     unsigned long long result;
 
@@ -211,7 +226,7 @@ bool is_number(const char *str, int *base, value_t *val) {
 
 
 bool is_operation(const char *str, operation_type *type) {
-    if (!str) {
+    if (!str || strlen(str) == 0) {
         return false;
     } 
     for (int i = 0; i < NUM_OP; i++) {
