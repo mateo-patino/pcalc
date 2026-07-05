@@ -11,6 +11,7 @@
 
 #include "token.h"
 #include "lexer.h"
+#include "ast.h"
 
 
 /*
@@ -37,6 +38,7 @@ int count_tokens(const char *str) {
     }
     return tok_count;
 }
+
 
 /* 
 TODO: Usage and help function.
@@ -150,8 +152,16 @@ int main(int argc, char** argv) {
     }
 
 
-    /* Step 1) complete! Token array ready! */ 
-    
+    /* TODO: Ensure the tokens form a valid mathematical expression that can be parsed by the AST module */
+    if (validate_tokens_semantic(tokens, token_count) != TOKENS_OK) {
+        free_tokens_count(tokens, token_count);
+        return EXIT_FAILURE;
+    }
+
+    /* Parse the token array to build an Abstract Syntax Tree (AST) */
+    AST ast;
+    ast.root = create_ast_from_tokens(tokens, token_count); 
+       
     /*
     * TODO:
     * 1) Take argv and produce a token array
