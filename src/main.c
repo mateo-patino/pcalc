@@ -8,36 +8,11 @@
 #include <string.h>
 #include <ctype.h>
 #include <assert.h>
+#include <inttypes.h>
 
 #include "token.h"
 #include "lexer.h"
 #include "ast.h"
-
-
-/*
- * Returns the number of tokens in a string and -1 if the string is NULL.
- */
-int count_tokens(const char *str) {
-    if (!str) { 
-        return -1;
-    }
-    size_t len = strlen(str);
-    char s[len + 1];
-    strncpy(s, str, len + 1);
-    s[len] = '\0';
-
-    const char *sep = SPACE_CHARS;
-    char *tok = strtok(s, sep);
-    if (!tok) {
-        return 0;
-    }
-
-    int tok_count = 1;
-    while ((tok = strtok(NULL, sep)) != NULL) {
-        tok_count++;
-    }
-    return tok_count;
-}
 
 
 /* 
@@ -161,18 +136,11 @@ int main(int argc, char** argv) {
     /* Parse the token array to build an Abstract Syntax Tree (AST) */
     AST ast;
     ast.root = create_ast_from_tokens(tokens, token_count); 
-       
-    /*
-    * TODO:
-    * 1) Take argv and produce a token array
-    * 2) Build an AST with the token array
-    * 3) Perform semantic analysis (i.e. does the math make sense, type checking and errors)
-    * 4) Traverse the AST to evaluate
-    * 5) Output the result
-    */
 
-    /* FOR TESTING */
-    show_token_array(tokens, token_count);
+    /* Evaluate the AST */
+    value_t out = evaluate_ast(&ast);
+
+    printf("%" PRIu64 "\n", out);
     free_tokens_count(tokens, token_count);
     return EXIT_SUCCESS;
 }
