@@ -203,13 +203,25 @@ void print_token_error(tokens_status status, const char *msg) {
             fprintf(stdout, "Valid tokens. %s\n", msg);
             break;
         case TOKENS_INVALID_ARG:
-            fprintf(stderr, "Invalid argument. %s\n", msg);
+            fprintf(stderr, "Error: invalid argument. %s\n", msg);
             break;
         case TOKENS_ULL_OVERFLOW:
-            fprintf(stderr, "Number is too large. %s\n", msg);
+            fprintf(stderr, "Error: number is too large. %s\n", msg);
             break;
         case TOKENS_NULL_STR:
-            fprintf(stderr, "NULL string was unexpectedly passed. %s\n", msg);
+            fprintf(stderr, "Error: NULL string was unexpectedly passed. %s\n", msg);
+            break;
+        case TOKENS_UNMATCHED_LPARENS:
+            fprintf(stderr, "Error: unmatched '('. %s\n", msg);
+            break;
+        case TOKENS_UNMATCHED_RPARENS:
+            fprintf(stderr, "Error: unmatched ')'. %s\n", msg);
+            break;
+        case TOKENS_EXPECTED_OPERAND:
+            fprintf(stderr, "Error: expected number %s\n", msg);
+            break;
+        case TOKENS_DIV_BY_ZERO:
+            fprintf(stderr, "Error: division by zero. %s\n", msg);
             break;
         case TOKENS_MALLOC_FAILURE:
             fprintf(stderr, "malloc() failed. %s\n", msg);
@@ -278,10 +290,74 @@ bool is_operation(const char *str, operation_type *type) {
 }
 
 
+/* 
+* Each function in this table checks different properties of the tokens array. 
+*/
+static const validator_func_t validators[] = {
+    validate_parens,
+    validate_div_by_zero,
+};
+
 
 tokens_status validate_tokens_semantic(const token_t *tokens, size_t token_count) {
-    /* TODO */
-    (void)tokens;
-    (void)token_count;
+    if (!tokens || token_count == 0) {
+        return TOKENS_INVALID_ARG;
+    }
+    size_t validators_len = sizeof(validators) / sizeof(validators[0]);
+    tokens_status status;
+    for (size_t i = 0; i < validators_len; i++) {
+        if ((status = validators[i](tokens, token_count)) != TOKENS_OK) {
+            return status;
+        }
+    }
+    return TOKENS_OK;
+}
+
+
+tokens_status validate_parens(const token_t *tokens, size_t token_count) {
+    if (!tokens || token_count == 0) {
+        return TOKENS_INVALID_ARG;
+    }
+    token_type type;
+    int open = 0;
+    for (size_t i = 0; i < token_count; i++) {
+        type = tokens[i].type;
+        if (type == LPAREN) {
+            open++;
+        }
+        else if (type == RPAREN) {
+            if (open >= 1) {
+                open--;
+                continue;
+            }
+            return TOKENS_UNMATCHED_RPARENS;
+        }
+    }
+    if (open > 0) {
+        return TOKENS_UNMATCHED_LPARENS;
+    }
+    return TOKENS_OK;
+}
+
+
+tokens_status validate_div_by_zero(const token_t *tokens, size_t token_count) {
+    if (!tokens || token_count == 0) {
+        return TOKENS_INVALID_ARG;
+    }
+    for (size_t i = 0; i < token_count; i++) {
+        if (tokens[i].type == OPERATOR) {
+            operator_t *oper = (operator_t *)tokens[i].obj;
+            if (oper && oper->op == DIV && i < token_count - 1) {
+                if (tokens[i+1].type == NUMBER) {
+                    number_t *num = (number_t *)tokens[i+1].obj;
+                    if (num && num->value == 0) {
+                        return TOKENS_DIV_BY_ZERO;
+                    }
+                }
+            }
+            /* If i == token_count - 1 and tokens[i] is a DIV, that is a missing operand error,
+            * which is handled by the corresponding validator */
+        }
+    }
     return TOKENS_OK;
 }

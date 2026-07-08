@@ -10,6 +10,10 @@ typedef enum {
     TOKENS_INVALID_ARG,
     TOKENS_ULL_OVERFLOW,
     TOKENS_NULL_STR,
+    TOKENS_UNMATCHED_LPARENS,
+    TOKENS_UNMATCHED_RPARENS,
+    TOKENS_EXPECTED_OPERAND,
+    TOKENS_DIV_BY_ZERO,
     TOKENS_MALLOC_FAILURE
 } tokens_status;
 
@@ -120,7 +124,23 @@ bool is_operation(const char *str, operation_type *type);
 /*
 * Verifies that the 'tokens' array makes mathematical sense and can be transformed into
 * an abstract syntax tree by the AST module.
+*
+* It uses the 'validation_funcs' table in lexer.c to run a comprenhensive set of checks.
+* Each validator function is declared below, and it is of type validator_func_t.
 */
 tokens_status validate_tokens_semantic(const token_t *tokens, size_t token_count);
+
+typedef tokens_status (*validator_func_t)(const token_t *tokens, size_t token_count);
+
+/*
+* Verify all parentheses are correctly opened and closed.
+*/
+tokens_status validate_parens(const token_t *tokens, size_t token_count);
+
+/*
+* Verify the user doesn't attempt to write " ... / 0 "
+*/
+tokens_status validate_div_by_zero(const token_t *tokens, size_t token_count);
+
 
 #endif
