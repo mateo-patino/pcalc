@@ -25,6 +25,7 @@ int run_ast_tests(int *total_ran, int *crashes) {
     return pass;
 }
 
+
 value_t _evaluate_expression(const char *expr) { 
     if (!expr) { return -1; }
 
@@ -127,9 +128,9 @@ bool test_evaluation_parens_madness(void) {
     ASSERT_EXPR("( ( ( ( 0x10 ) ) ) ) + ( ( ( ( ( 02 ) ) ) ) )", (value_t)18);
     ASSERT_EXPR("( ( ( ( ( 0b1010 ) ) ) ) ) * ( ( ( ( ( 03 ) ) ) ) )", (value_t)30);
     ASSERT_EXPR("( ( ( ( ( ( 100 ) ) ) ) ) ) / ( ( ( ( ( 0x04 ) ) ) ) )", (value_t)25);
-    ASSERT_EXPR("( ( ( ( ( 0x20 ) ) ) ) ) + ( ( ( ( ( 0b1000 ) ) ) ) * ( ( ( ( ( 03 ) ) ) ) )", (value_t)56);
-    ASSERT_EXPR("( ( ( ( ( ( 10 + ( ( ( ( ( 0x10 ) ) ) ) ) ) ) ) ) ) * ( ( ( ( ( 0b11 + ( ( ( ( ( 01 ) ) ) ) ) ) ) ) ) )", (value_t)104);
-    ASSERT_EXPR("( ( ( ( ( ( ( ( 0x40 ) ) ) ) + ( ( ( ( ( 010 ) ) ) ) ) ) ) * ( ( ( ( ( ( 0b100 ) ) ) ) - ( ( ( ( ( 01 ) ) ) ) ) ) ) / ( ( ( ( ( 03 ) ) ) ) )", (value_t)72);
+    ASSERT_EXPR("( ( ( ( ( 0x20 ) ) ) ) ) + ( ( ( ( ( 0b1000 ) ) ) ) * ( ( ( ( ( 03 ) ) ) ) ) )", (value_t)56);
+    ASSERT_EXPR("( ( ( ( ( ( 10 + ( ( ( ( ( 0x10 ) ) ) ) ) ) ) ) ) ) * ( ( ( ( ( 0b11 + ( ( ( ( ( 01 ) ) ) ) ) ) ) ) ) ) )", (value_t)104);
+    ASSERT_EXPR("( ( ( ( ( ( ( ( 0x40 ) ) ) ) + ( ( ( ( ( 010 ) ) ) ) ) ) ) * ( ( ( ( ( ( 0b100 ) ) ) ) - ( ( ( ( ( 01 ) ) ) ) ) ) ) / ( ( ( ( ( 03 ) ) ) ) ) )", (value_t)72);
     ASSERT_EXPR("( ( ( ( ( ( 0x40 ) ) ) - ( ( ( ( ( ( 010 ) ) ) + ( ( ( 0b100 ) ) ) ) ) ) ) * ( ( ( ( ( ( 02 ) ) ) ) ) ) ) )", (value_t)104);
     
     return true;
