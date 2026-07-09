@@ -109,6 +109,7 @@ void assert_expr_failed(const char *expr, value_t out, value_t result, const cha
 
 
 void assert_tok_status_failed(tokens_status expect, tokens_status recv, const char *expr, const char *file_name, int line, const char *func);
+void tokens_status_to_str(tokens_status status, bool add_newline);
 #define ASSERT_TOK_STATUS(expect, recv, expr) \
     do { \
         tokens_status _expect = (tokens_status)expect; \

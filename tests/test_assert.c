@@ -109,10 +109,52 @@ void assert_expr_failed(const char *expr, value_t out, value_t result, const cha
 }
 
 
+void tokens_status_to_str(tokens_status status, bool add_newline) {
+    switch (status) {
+        case TOKENS_OK:
+            fprintf(stderr, "TOKENS_OK");
+            break;
+        case TOKENS_INVALID_ARG:
+            fprintf(stderr, "TOKENS_INVALID_ARG");
+            break;
+        case TOKENS_ULL_OVERFLOW:
+            fprintf(stderr, "TOKENS_ULL_OVERFLOW");
+            break;
+        case TOKENS_NULL_STR:
+            fprintf(stderr, "TOKENS_NULL_STR");
+            break;
+        case TOKENS_UNMATCHED_LPARENS:
+            fprintf(stderr, "TOKENS_UNMATCHED_LPARENS");
+            break; 
+        case TOKENS_UNMATCHED_RPARENS:
+            fprintf(stderr, "TOKENS_UNMATCHED_RPARENS");
+            break;
+        case TOKENS_EXPECTED_OPERAND:
+            fprintf(stderr, "TOKENS_EXPECTED_OPERAND");
+            break;
+        case TOKENS_DIV_BY_ZERO:
+            fprintf(stderr, "TOKENS_DIV_BY_ZERO");
+            break;
+        case TOKENS_MALLOC_FAILURE:
+            fprintf(stderr, "TOKENS_MALLOC_FAILURE");
+            break;
+        default:
+            fprintf(stderr, "unknown tokens status");
+            break;
+    }
+    if (add_newline) { 
+        fprintf(stderr, "\n"); 
+    }
+}
+
+
 void assert_tok_status_failed(tokens_status expect, tokens_status recv, const char *expr, const char *file_name, int line, const char *func) {
     fprintf(stderr, BOLD "%s " ANSI_RED "FAILED" ANSI_RESET "\n", func);
     fprintf(stderr, "   %s\n", expr);
-    fprintf(stderr, "   Expected: %i Received: " BOLD "%i" ANSI_RESET "\n",  expect, recv);
+    fprintf(stderr, "   Expected: "); 
+    tokens_status_to_str(expect, false);
+    fprintf(stderr, " Received: ");
+    tokens_status_to_str(recv, true);
     fprintf(stderr, "   at %s:%i\n", file_name, line);
     fprintf(stderr, "   in %s\n", func);
 }
