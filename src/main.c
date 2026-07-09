@@ -127,8 +127,13 @@ int main(int argc, char** argv) {
     }
 
 
-    /* TODO: Ensure the tokens form a valid mathematical expression that can be parsed by the AST module */
-    if (validate_tokens_semantic(tokens, token_count) != TOKENS_OK) {
+    /* Ensure the tokens form a valid mathematical expression that can be parsed by the AST module */
+    if ((tok_status = validate_tokens_semantic(tokens, token_count)) != TOKENS_OK) {
+        /* TOKENS_EXPECTED_OPERAND error message is printed inside validators to inform user of which operator
+        * is missing an operand, hence we skip printing out here if that error is returned */
+        if (tok_status != TOKENS_EXPECTED_OPERAND) {
+            print_token_error(tok_status, NULL);
+        }
         free_tokens_count(tokens, token_count);
         return EXIT_FAILURE;
     }
@@ -142,5 +147,6 @@ int main(int argc, char** argv) {
 
     printf("%" PRIu64 "\n", out);
     free_tokens_count(tokens, token_count);
+    free_ast(&ast);
     return EXIT_SUCCESS;
 }

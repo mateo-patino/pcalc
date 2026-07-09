@@ -183,7 +183,6 @@ void free_subtree(ASTNode *node) {
 }
 
 
-
 bool has_any_operations(const token_t *tokens, int low, int high) {
     if (!tokens) {
         return NULL;
