@@ -115,6 +115,7 @@ value_t evaluate_ast_helper(const ASTNode *root, ast_status *status) {
 
     if (tok->type != OPERATOR) {
         if (status) { *status = AST_EXPECTED_OPERATOR; }
+        return (value_t)0;
     }
 
     operator_t *oper = (operator_t *)tok->obj;
