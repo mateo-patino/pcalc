@@ -13,6 +13,7 @@
 #include "token.h"
 #include "lexer.h"
 #include "ast.h"
+#include "printer.h"
 
 
 /* 
@@ -42,6 +43,7 @@ int main(int argc, char** argv) {
 
     bool b_flag = false, o_flag = false, d_flag = false, x_flag = false, all_bases = true; 
     (void)all_bases; /* TO SILENCE WERROR. TODO: REMOVE */
+
     /*
     * To control the base of the output, use the following options:
     * -b: binary
@@ -139,13 +141,34 @@ int main(int argc, char** argv) {
     }
 
     /* Parse the token array to build an Abstract Syntax Tree (AST) */
+    ast_status ast_create_status = AST_OK;
     AST ast;
-    ast.root = create_ast_from_tokens(tokens, token_count); 
+    ast.root = create_ast_from_tokens(tokens, token_count, &ast_create_status); 
+    if (!ast.root || ast_create_status != AST_OK) {
+        print_ast_error(ast_create_status, NULL);
+        free_ast(&ast);
+        free_tokens_count(tokens, token_count);
+        return EXIT_FAILURE;
+    }
 
     /* Evaluate the AST */
-    value_t out = evaluate_ast(&ast);
+    ast_status ast_eval_status = AST_OK;
+    value_t out = evaluate_ast(&ast, &ast_eval_status);
+    if (ast_eval_status != AST_OK) {
+        print_ast_error(ast_eval_status, NULL);
+        free_ast(&ast);
+        free_tokens_count(tokens, token_count);
+        return EXIT_FAILURE;
+    }
 
-    printf("%" PRIu64 "\n", out);
+    /* TODO: check why ./pcalc 100 - \( 10 - 10 \) produces no dbz error but ./pcalc "100 - ( 10 - 10 )" does */
+
+    /* Pretty print according to flags */
+    bool caps = true; /* TODO: put into a flag option */
+    if (all_bases) {
+        print_all_bases(stdout, out, caps);
+    }
+
     free_tokens_count(tokens, token_count);
     free_ast(&ast);
     return EXIT_SUCCESS;
