@@ -48,9 +48,10 @@ value_t _evaluate_expression(const char *expr) {
     }
     
     /* Parse the token array to build an Abstract Syntax Tree (AST) */
+    ast_status eval_status;
     AST ast;
     ast.root = create_ast_from_tokens(tokens, token_count, NULL); 
-    value_t out = evaluate_ast(&ast);
+    value_t out = evaluate_ast(&ast, &eval_status);
 
     free_tokens_count(tokens, token_count);
     free_ast(&ast);
