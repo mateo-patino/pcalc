@@ -322,6 +322,7 @@ void print_ast_error(ast_status code, char *msg) {
             break;
         case AST_UNKNOWN_OPERATION:
             fprintf(stderr, "Error: unknown operation. %s\n", msg);
+            break;
         case AST_MALLOC_FAILURE:
             fprintf(stderr, "Error: malloc() failed. %s\n", msg);
             break;
