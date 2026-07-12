@@ -54,6 +54,20 @@ void pretty_print_octal(FILE *stream, value_t res, int group_by);
 void pretty_print_decimal(FILE *stream, value_t res);
 
 
+/*
+* Recursively grabs the last 3 digits of an integer and prints them only after
+* all the more significant digits have been printed.
+*
+* It prints a comma after every 3-digit value. Hence, to pretty-print (comma-print)
+* a decimal number, the last 3 digits of the number should be processed before 
+* calling this function.
+*
+* It returns true to a caller frame whose 'rem' is the most signifcant thousand in the number.
+* This is done to disable the zero padding should 'rem' be less than 3 digits long.
+*/
+bool pp_decimal_helper(FILE *stream, value_t quotient);
+
+
 /* 
 * Pretty prints a value 'res' to 'stream' in the 'base' number system.
 * If 'caps' is true, it prints the value in caps. If 'add_newline' is true,

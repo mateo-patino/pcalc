@@ -148,5 +148,30 @@ void pretty_print_decimal(FILE *stream, value_t res) {
     if (!stream) {
         return;
     }
-    
+    value_t rem = res % 1000;
+    bool is_mst = pp_decimal_helper(stream, res / 1000);
+    if (!is_mst && rem < 100) {
+        int padding = rem > 9 ? 1 : 2;
+        for (int i = 0; i < padding; i++) {
+            fputc('0', stream);
+        }
+    }
+    fprintf(stream, "%" PRIu64, rem); /* Least significant thousand doesn't have a comma */
+}
+
+
+bool pp_decimal_helper(FILE *stream, value_t quotient) {
+    if (!quotient) {
+        return true;
+    }
+    value_t rem = quotient % 1000;
+    bool is_mst = pp_decimal_helper(stream, quotient / 1000);
+    if (!is_mst && rem < 100) {
+        int padding = rem > 9 ? 1 : 2;
+        for (int i = 0; i < padding; i++) {
+            fputc('0', stream);
+        }
+    }
+    fprintf(stream, "%" PRIu64 ",", rem);
+    return false;
 }
