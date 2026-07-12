@@ -26,7 +26,7 @@ void pretty_print_value(FILE *stream, value_t res, int base, bool caps, bool add
             pretty_print_octal(stream, res, GROUP_OCTAL_BY);
             break;
         case 10:
-            fprintf(stream, "%" PRIu64, res);
+            pretty_print_decimal(stream, res);
             break;
         case 16:
             if (caps) {
@@ -114,29 +114,37 @@ void pretty_print_octal(FILE *stream, value_t res, int group_by) {
     do {
         remainder = quotient % 8;
         quotient = quotient / 8;
-        buf[MAXLEN_OCTAL_STR - 1 - digits] = remainder;
-        digits++;
+        buf[digits++] = remainder;
     } while (quotient > 0);
 
     /* Pad to achieve whole groups */
     int digits_printed = 0;
+    int padding = 0;
     int rem;
     if ((rem = digits % group_by) != 0) {
-        int padding = group_by - rem;
+        padding = group_by - rem;
         for (int i = 0; i < padding; i++) {
             fputc('0', stream);
             digits_printed++;
         }
     }
-
-    for (int i = MAXLEN_OCTAL_STR - digits; i < MAXLEN_OCTAL_STR; i++) {
+    
+    int total_digits = digits + padding;
+    for (int i = digits - 1; i >= 0; i--) {
         fputc('0' + buf[i], stream);
         digits_printed++;
 
-        if (digits_printed < digits && digits_printed % group_by == 0) {
+        if (digits_printed < total_digits && digits_printed % group_by == 0) {
             fputc(' ', stream);
         }
     }
 
 }
 
+
+void pretty_print_decimal(FILE *stream, value_t res) {
+    if (!stream) {
+        return;
+    }
+    
+}

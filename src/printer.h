@@ -6,7 +6,6 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
-#include <math.h>
 
 
 /* 
@@ -38,6 +37,7 @@ void pretty_print_all_bases(FILE *stream, value_t res, bool caps);
 */
 void pretty_print_binary(FILE *stream, value_t res, int group_by);
 
+
 /* Find the number of digits in the largest octal number. Recall one octal digit corresponds to 3 bits */
 #define MAXLEN_OCTAL_STR (int)((CHAR_BIT * sizeof(value_t) + 2 ) / 3) /* Ceiling of n / d = ( n + d - 1 ) / d */
 
@@ -46,6 +46,13 @@ void pretty_print_binary(FILE *stream, value_t res, int group_by);
 * The digits are arranged in groups of 'group_by' digits.
 */
 void pretty_print_octal(FILE *stream, value_t res, int group_by);
+
+
+/*
+* Prints in 'res' in decimal format using commas to separate thousands.
+*/
+void pretty_print_decimal(FILE *stream, value_t res);
+
 
 /* 
 * Pretty prints a value 'res' to 'stream' in the 'base' number system.
