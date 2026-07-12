@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdlib.h>
+#include <math.h>
 
 
 /* 
@@ -26,17 +27,25 @@ int find_highest_exponent_2(value_t res);
 /*
 * Prints 'res' in binary, octal, decimal, and hexadecimal base to 'stream'.
 */
-void print_all_bases(FILE *stream, value_t res, bool caps);
+void pretty_print_all_bases(FILE *stream, value_t res, bool caps);
 
 
 /*
-* Prints 'res' in binary format to 'stream'. If 'caps' is true, the number is prefixed with
-* OB and with 0b otherwise.
+* Prints 'res' in binary format to 'stream'. 
 *
-* The digits of the printer number are arranged in groups of 'group_by' digits.
+* The digits of the printer number are arranged in groups of 'group_by' digits and 
+* prefixed by 0b.
 */
-void print_binary(FILE *stream, value_t res, int group_by);
+void pretty_print_binary(FILE *stream, value_t res, int group_by);
 
+/* Find the number of digits in the largest octal number. Recall one octal digit corresponds to 3 bits */
+#define MAXLEN_OCTAL_STR (int)((CHAR_BIT * sizeof(value_t) + 2 ) / 3) /* Ceiling of n / d = ( n + d - 1 ) / d */
+
+/*
+* Prints 'res' in octal format to 'stream'.
+* The digits are arranged in groups of 'group_by' digits.
+*/
+void pretty_print_octal(FILE *stream, value_t res, int group_by);
 
 /* 
 * Pretty prints a value 'res' to 'stream' in the 'base' number system.
@@ -44,5 +53,6 @@ void print_binary(FILE *stream, value_t res, int group_by);
 * it prints a newline after the number.
 */
 void pretty_print_value(FILE* stream, value_t res, int base, bool caps, bool add_newline);
+
 
 #endif
