@@ -38,24 +38,28 @@ void show_token_array(const token_t *tok, int count) {
 }
 
 
-
 int main(int argc, char** argv) {
 
     bool b_flag = false, o_flag = false, d_flag = false, x_flag = false, all_bases = true; 
-    (void)all_bases; /* TO SILENCE WERROR. TODO: REMOVE */
+    bool print_caps = false; 
 
     /*
-    * To control the base of the output, use the following options:
+    * To print the output in machine-friendly format, use the following options:
+    *
     * -b: binary
     * -o: octal
     * -d: decimal
     * -x: hexadecimal
     * -h: help
+    *
+    * If you do not pass any flags, a human-friendly format and all bases are printed.
+    *
+    * To print hexadecimal digits in uppercase, pass the -c flag.
     */
 
     opterr = 0;
     int c = 0;
-    while ((c = getopt(argc, argv, "+bodxh")) != -1) {
+    while ((c = getopt(argc, argv, "+bodxch")) != -1) {
         switch(c) {
             case 'b':
                 b_flag = true;
@@ -69,6 +73,9 @@ int main(int argc, char** argv) {
             case 'x':
                 x_flag = true;
                 break;
+            case 'c':
+                print_caps = true;
+                break;
             case 'h':
                 pcalc_help();
                 return EXIT_SUCCESS;
@@ -79,7 +86,7 @@ int main(int argc, char** argv) {
     }
 
     if (b_flag + o_flag + d_flag + x_flag > 1) {
-        fprintf(stderr, "Error: too many options received.\n");
+        fprintf(stderr, "Error: too many options received. Remove all flags for full report.\n");
         return EXIT_FAILURE;
     }
     else if (b_flag + o_flag + d_flag + x_flag == 1) {
@@ -140,15 +147,17 @@ int main(int argc, char** argv) {
         return EXIT_FAILURE;
     }
 
+    /* Exit status for main */
+    int retval = EXIT_SUCCESS;
+
     /* Parse the token array to build an Abstract Syntax Tree (AST) */
     ast_status ast_create_status = AST_OK;
     AST ast;
     ast.root = create_ast_from_tokens(tokens, token_count, &ast_create_status); 
     if (!ast.root || ast_create_status != AST_OK) {
         print_ast_error(ast_create_status, NULL);
-        free_ast(&ast);
-        free_tokens_count(tokens, token_count);
-        return EXIT_FAILURE;
+        retval = EXIT_FAILURE;
+        goto FREE_AND_EXIT;
     }
 
     /* Evaluate the AST */
@@ -156,20 +165,29 @@ int main(int argc, char** argv) {
     value_t out = evaluate_ast(&ast, &ast_eval_status);
     if (ast_eval_status != AST_OK) {
         print_ast_error(ast_eval_status, NULL);
-        free_ast(&ast);
-        free_tokens_count(tokens, token_count);
-        return EXIT_FAILURE;
+        retval = EXIT_FAILURE;
+        goto FREE_AND_EXIT;
     }
-
-    /* TODO: check why ./pcalc 100 - \( 10 - 10 \) produces no dbz error but ./pcalc "100 - ( 10 - 10 )" does */
 
     /* Pretty print according to flags */
-    bool caps = true; /* TODO: put into a flag option */
     if (all_bases) {
-        print_all_bases(stdout, out, caps);
+        pretty_print_all_bases(stdout, out, print_caps);
     }
-
-    free_tokens_count(tokens, token_count);
+    else if (b_flag) {
+        raw_print_binary(stdout, out, true); 
+    }
+    else if (o_flag) {
+        raw_print_octal(stdout, out, true);
+    }
+    else if (d_flag) {
+        raw_print_decimal(stdout, out, true);
+    }
+    else if (x_flag) {
+        raw_print_hexadecimal(stdout, out, print_caps, true);
+    }
+    
+FREE_AND_EXIT:
     free_ast(&ast);
-    return EXIT_SUCCESS;
+    free_tokens_count(tokens, token_count);
+    return retval;
 }
