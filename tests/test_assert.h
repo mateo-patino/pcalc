@@ -7,6 +7,23 @@
 #define ARRAY_LEN(a) (sizeof(a) / sizeof((a)[0]))
 
 
+/*
+* Tokenizes an expression and returns a pointer to the array of tokens. 
+*
+* If 'stauts' is not NULL, the tokens_status code is written there. If 'tc' is not NULL,
+* the token count is written there.
+*/
+token_t *_tokenize_from_expression(const char *expr, tokens_status *status, size_t *tc);
+
+/*
+* Calls tokenizer and evaluator on a mathematical expression, simulating the entire pipeline
+* of pcalc.
+*
+* Returns the result of evaluating the expression and -1 if an error occurs.
+*/
+value_t _evaluate_expression(const char *expr);
+
+
 /* Structure of a test case */
 typedef bool (*test_func_t)(void);
 typedef struct {

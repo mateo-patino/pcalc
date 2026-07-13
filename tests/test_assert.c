@@ -10,6 +10,7 @@
 
 #include "test_assert.h"
 #include "token.h"
+#include "ast.h"
 
 
 int run_forked_tests(const test_case_t *tests, size_t test_count, int *signaled) {
@@ -66,6 +67,54 @@ int run_forked_tests(const test_case_t *tests, size_t test_count, int *signaled)
    if (signaled) { *signaled = crashes; }
 
    return pass;
+}
+
+
+token_t *_tokenize_from_expression(const char *expr, tokens_status *status, size_t *tc) {
+    if (!expr) { return NULL; }
+
+    size_t len = strlen(expr);
+    char str[len + 1];
+    strncpy(str, expr, len + 1);
+    str[len] = '\0';
+
+    size_t token_count = count_tokens(expr);
+    token_t *tokens = malloc(token_count * sizeof(token_t));
+    tokens_status tok_status;
+    if ((tok_status = create_tokens_from_string(str, tokens, NULL)) != TOKENS_OK) {
+        if (status) { *status = tok_status; }
+        free_tokens_invalid(tokens);
+        return NULL;
+    }
+
+    if ((tok_status = validate_tokens_semantic(tokens, token_count)) != TOKENS_OK) {
+        if (status) { *status = tok_status; }
+        free_tokens_count(tokens, token_count);
+        return NULL;
+    }
+
+    if (tc) { *tc = token_count; }
+
+    return tokens;
+}
+
+
+value_t _evaluate_expression(const char *expr) { 
+    size_t token_count = 0;
+    tokens_status tok_status;
+    /* Note these tokens are malloc'd */
+    token_t *tokens = _tokenize_from_expression(expr, &tok_status, &token_count);
+    
+    /* Parse the token array to build an Abstract Syntax Tree (AST) */
+    ast_status eval_status;
+    AST ast;
+    ast.root = create_ast_from_tokens(tokens, token_count, NULL); 
+    value_t out = evaluate_ast(&ast, &eval_status);
+
+    free_tokens_count(tokens, token_count);
+    free(tokens);
+    free_ast(&ast);
+    return out;
 }
 
 

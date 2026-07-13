@@ -26,39 +26,6 @@ int run_ast_tests(int *total_ran, int *crashes) {
 }
 
 
-value_t _evaluate_expression(const char *expr) { 
-    if (!expr) { return -1; }
-
-    size_t len = strlen(expr);
-    char str[len + 1];
-    strncpy(str, expr, len + 1);
-    str[len] = '\0';
-
-    size_t token_count = count_tokens(expr);
-    token_t tokens[token_count];
-    tokens_status status;
-    if ((status = create_tokens_from_string(str, tokens, NULL)) != TOKENS_OK) {
-        free_tokens_invalid(tokens);
-        return -1;
-    }
-
-    if (validate_tokens_semantic(tokens, token_count) != TOKENS_OK) {
-        free_tokens_count(tokens, token_count);
-        return -1;
-    }
-    
-    /* Parse the token array to build an Abstract Syntax Tree (AST) */
-    ast_status eval_status;
-    AST ast;
-    ast.root = create_ast_from_tokens(tokens, token_count, NULL); 
-    value_t out = evaluate_ast(&ast, &eval_status);
-
-    free_tokens_count(tokens, token_count);
-    free_ast(&ast);
-    return out;
-}
-
-
 bool test_evaluation_simple(void) {
     ASSERT_EXPR("1 + 1", (value_t)2);
     ASSERT_EXPR("10 - 1 ", (value_t)9);
@@ -137,3 +104,5 @@ bool test_evaluation_parens_madness(void) {
     
     return true;
 }
+
+
