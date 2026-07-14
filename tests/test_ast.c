@@ -130,6 +130,23 @@ bool test_ast_structure_easy(void) {
     ASSERT_NODE_NUMBER(root->right, (value_t)3);
     ASSERT_NODE_NUMBER(root->left->left, (value_t)1);
     ASSERT_NODE_NUMBER(root->left->right, (value_t)2);
+    
+    root = _initialize_ast_from_expression("1 * 2 + 3");
+    ASSERT_NODE_OP(root, ADD);
+    ASSERT_NODE_OP(root->left, MUL);
+    ASSERT_NODE_NUMBER(root->right, (value_t)3);
+    ASSERT_NODE_NUMBER(root->left->left, (value_t)1);
+    ASSERT_NODE_NUMBER(root->left->right, (value_t)2);
+
+    root = _initialize_ast_from_expression("1 * 2 * 3");
+    ASSERT_NODE_OP(root, MUL);
+    ASSERT_NODE_OP(root->left, MUL);
+    ASSERT_NODE_NUMBER(root->right, (value_t)3);
+    ASSERT_NODE_NUMBER(root->left->left, (value_t)1);
+    ASSERT_NODE_NUMBER(root->left->right, (value_t)2);
 
     return true;
 }
+
+
+
