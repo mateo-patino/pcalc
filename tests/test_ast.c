@@ -19,7 +19,9 @@ static const test_case_t ast_tests[] = {
     TEST(test_ast_structure_hard),
     TEST(test_ast_structure_harder),
     TEST(test_ast_structure_edge_cases),
-    TEST(test_ast_division_by_zero)
+    TEST(test_ast_division_by_zero),
+    TEST(test_ast_overflow),
+    TEST(test_ast_underflow)
 };
 
 
@@ -419,6 +421,68 @@ bool test_ast_division_by_zero(void) {
 
     _evaluate_expression("123 / ( ( 010 + ( 0x10 - 0b100 ) ) - ( 0b101 * 4 ) )", &status);
     ASSERT_TRUE(status == AST_DIV_BY_ZERO);
+
+    return true;
+}
+
+
+bool test_ast_overflow(void) {
+    ast_status status;
+
+    _evaluate_expression("18446744073709551615 + 1", &status);
+    ASSERT_TRUE(status == AST_INTEGER_OVERFLOW);
+
+    _evaluate_expression("0xffffffffffffffff + 0b1", &status);
+    ASSERT_TRUE(status == AST_INTEGER_OVERFLOW);
+
+    _evaluate_expression("( ( 0xffffffffffffffff - 0x10 ) + 0x11 ) + 1", &status);
+    ASSERT_TRUE(status == AST_INTEGER_OVERFLOW);
+
+    _evaluate_expression("2 * ( 0x7fffffffffffffff + 0x1 )", &status);
+    ASSERT_TRUE(status == AST_INTEGER_OVERFLOW);
+
+    _evaluate_expression("( ( 0x4000000000000000 + 0x4000000000000000 ) * ( 0b10 + 0b0 ) )", &status);
+    ASSERT_TRUE(status == AST_INTEGER_OVERFLOW);
+
+    _evaluate_expression("( ( 0xffffffffffffffff / 0x10 ) * 0x10 ) + 0x10", &status);
+    ASSERT_TRUE(status == AST_INTEGER_OVERFLOW);
+
+    _evaluate_expression("( ( 0x7fffffffffffffff * 0b10 ) + 0b1 ) + ( 0x10 - 0x0f )", &status);
+    ASSERT_TRUE(status == AST_INTEGER_OVERFLOW);
+
+    _evaluate_expression("0xffffffffffffffff + ( ( 03 * 05 ) - 0x0e )", &status);
+    ASSERT_TRUE(status == AST_INTEGER_OVERFLOW);
+
+    return true;
+}
+
+
+bool test_ast_underflow(void) {
+    ast_status status;
+
+    _evaluate_expression("1 - 2", &status);
+    ASSERT_TRUE(status == AST_INTEGER_UNDERFLOW);
+
+    _evaluate_expression("0x10 - 0b10001", &status);
+    ASSERT_TRUE(status == AST_INTEGER_UNDERFLOW);
+
+    _evaluate_expression("( ( 0x20 - 0x10 ) - ( ( 03 * 04 ) + 05 ) )", &status);
+    ASSERT_TRUE(status == AST_INTEGER_UNDERFLOW);
+
+    _evaluate_expression("( ( 02 + 03 ) - ( 0x1 + 0b101 ) )", &status);
+    ASSERT_TRUE(status == AST_INTEGER_UNDERFLOW);
+
+    _evaluate_expression("( 0x100 / 04 ) - ( 0b1000000 + 1 )", &status);
+    ASSERT_TRUE(status == AST_INTEGER_UNDERFLOW);
+
+    _evaluate_expression("( 0xffffffffffffffff - 0x10 ) - ( 0xffffffffffffffff - 0x0f )", &status);
+    ASSERT_TRUE(status == AST_INTEGER_UNDERFLOW);
+
+    _evaluate_expression("( ( 0x10 + 0b10 ) * 02 ) - ( ( 03 + 05 ) * 05 )", &status);
+    ASSERT_TRUE(status == AST_INTEGER_UNDERFLOW);
+
+    _evaluate_expression("( ( 010 - 03 ) + ( 02 * 04 ) ) - ( 0x10 + 0b1 )", &status);
+    ASSERT_TRUE(status == AST_INTEGER_UNDERFLOW);
 
     return true;
 }

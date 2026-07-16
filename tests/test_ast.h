@@ -58,9 +58,15 @@ bool test_ast_structure_hard(void);
 bool test_ast_structure_harder(void);
 bool test_ast_structure_edge_cases(void);
 
+
 /*
-* Test AST error catching (overflow, underflow, etc.)
+* Test AST error catching during evaluation time. The errors that can be caught
+* while evaluation occurs are division by zero, integer overflow, and integer underflow.
+*
+* Overflow can occur during addition and multiplication. Underflow can occur during subtraction.
 */
 bool test_ast_division_by_zero(void);
+bool test_ast_overflow(void);
+bool test_ast_underflow(void);
 
 #endif
