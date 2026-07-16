@@ -9,11 +9,31 @@
 #include <ctype.h>
 #include <assert.h>
 #include <inttypes.h>
+#include <errno.h>
 
 #include "token.h"
 #include "lexer.h"
 #include "ast.h"
 #include "printer.h"
+
+
+int is_valid_grouping(char *grp_by_str) {
+    if (!grp_by_str || *grp_by_str == '\0') {
+        return -1;
+    }
+    char *end;
+    errno = 0;
+    int res = (int)strtol(grp_by_str, &end, 10);
+
+    if (*end != '\0' || end == grp_by_str) {
+        return -1;
+    }
+    else if (errno != 0) {
+        return -1;
+    }
+
+    return res;
+}
 
 
 /* 
@@ -40,38 +60,25 @@ void show_token_array(const token_t *tok, int count) {
 
 int main(int argc, char** argv) {
 
-    bool b_flag = false, o_flag = false, d_flag = false, x_flag = false, all_bases = true; 
+    int group_bin_by = 0, group_oct_by = 0, group_hex_by = 0; 
+    bool accept_grouping = true;
     bool print_caps = false; 
-
-    /*
-    * To print the output in machine-friendly format, use the following options:
-    *
-    * -b: binary
-    * -o: octal
-    * -d: decimal
-    * -x: hexadecimal
-    * -h: help
-    *
-    * If you do not pass any flags, a human-friendly format and all bases are printed.
-    *
-    * To print hexadecimal digits in uppercase, pass the -c flag.
-    */
 
     opterr = 0;
     int c = 0;
-    while ((c = getopt(argc, argv, "+bodxch")) != -1) {
+    while ((c = getopt(argc, argv, ":b:o:x:ch")) != -1) {
         switch(c) {
             case 'b':
-                b_flag = true;
+                group_bin_by = is_valid_grouping(optarg); 
+                accept_grouping = group_bin_by == -1 ? false : true;
                 break;
             case 'o':
-                o_flag = true;
-                break;
-            case 'd':
-                d_flag = true;
+                group_oct_by = is_valid_grouping(optarg);
+                accept_grouping = group_oct_by == -1 ? false : true;
                 break;
             case 'x':
-                x_flag = true;
+                group_hex_by = is_valid_grouping(optarg);
+                accept_grouping = group_hex_by == -1 ? false : true;
                 break;
             case 'c':
                 print_caps = true;
@@ -79,18 +86,18 @@ int main(int argc, char** argv) {
             case 'h':
                 bitpeek_help();
                 return EXIT_SUCCESS;
+            case ':':
+                fprintf(stderr, "Error: Missing group-by argument.\n");
+                break;
             case '?':
                 fprintf(stderr, "Error: Unknown option '-%c' received.\n", optopt);
                 return EXIT_FAILURE;
         }
     }
 
-    if (b_flag + o_flag + d_flag + x_flag > 1) {
-        fprintf(stderr, "Error: too many options received. Remove all flags for full report.\n");
+    if (!accept_grouping) {
+        fprintf(stderr, "Error: Invalid group-by argument.\n");
         return EXIT_FAILURE;
-    }
-    else if (b_flag + o_flag + d_flag + x_flag == 1) {
-        all_bases = false;
     }
 
     size_t token_count = 0;
@@ -169,23 +176,34 @@ int main(int argc, char** argv) {
         goto FREE_AND_EXIT;
     }
 
-    /* Pretty print according to flags */
-    if (all_bases) {
-        pretty_print_all_bases(stdout, out, print_caps);
+    /* Pretty print */
+    fprintf(stdout, "Base 2:        ");
+    if (!group_bin_by) {
+        raw_print_binary(stdout, out, true);
     }
-    else if (b_flag) {
-        raw_print_binary(stdout, out, true); 
+    else {
+        pretty_print_binary(stdout, out, group_bin_by); /* TODO add_newline parameter */
     }
-    else if (o_flag) {
+
+    fprintf(stdout, "Base 8:        ");
+    if (!group_oct_by) {
         raw_print_octal(stdout, out, true);
     }
-    else if (d_flag) {
-        raw_print_decimal(stdout, out, true);
+    else {
+        pretty_print_octal(stdout, out, group_oct_by);
     }
-    else if (x_flag) {
+
+    fprintf(stdout, "Base 10:       ");
+    pretty_print_decimal(stdout, out);
+    
+    fprintf(stdout, "Base 16:       ");
+    if (!group_hex_by) {
         raw_print_hexadecimal(stdout, out, print_caps, true);
     }
-    
+    else {
+        pretty_print_hexadecimal(stdout, out, group_hex_by, print_caps);
+    }
+
 FREE_AND_EXIT:
     free_ast(&ast);
     free_tokens_count(tokens, token_count);
