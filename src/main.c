@@ -23,7 +23,7 @@ int is_valid_grouping(char *grp_by_str) {
     }
     char *end;
     errno = 0;
-    int res = (int)strtol(grp_by_str, &end, 10);
+    long res = strtol(grp_by_str, &end, 10);
 
     if (*end != '\0' || end == grp_by_str) {
         return -1;
@@ -32,7 +32,7 @@ int is_valid_grouping(char *grp_by_str) {
         return -1;
     }
 
-    return res;
+    return res >= 0 ? (int)res : -1;
 }
 
 
@@ -182,7 +182,7 @@ int main(int argc, char** argv) {
         raw_print_binary(stdout, out, true);
     }
     else {
-        pretty_print_binary(stdout, out, group_bin_by); /* TODO add_newline parameter */
+        pretty_print_binary(stdout, out, group_bin_by, true);
     }
 
     fprintf(stdout, "Base 8:        ");
@@ -190,18 +190,18 @@ int main(int argc, char** argv) {
         raw_print_octal(stdout, out, true);
     }
     else {
-        pretty_print_octal(stdout, out, group_oct_by);
+        pretty_print_octal(stdout, out, group_oct_by, true);
     }
 
     fprintf(stdout, "Base 10:       ");
-    pretty_print_decimal(stdout, out);
+    pretty_print_decimal(stdout, out, true);
     
     fprintf(stdout, "Base 16:       ");
     if (!group_hex_by) {
         raw_print_hexadecimal(stdout, out, print_caps, true);
     }
     else {
-        pretty_print_hexadecimal(stdout, out, group_hex_by, print_caps);
+        pretty_print_hexadecimal(stdout, out, group_hex_by, print_caps, true);
     }
 
 FREE_AND_EXIT:

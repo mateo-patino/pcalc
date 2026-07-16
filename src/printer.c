@@ -31,50 +31,6 @@ int find_highest_exponent_2(value_t res) {
 }
 
 
-void pretty_print_value(FILE *stream, value_t res, int base, bool caps, bool add_newline) {
-    if (!stream) {
-        return;
-    }
-    switch(base) {
-        case 2:
-            pretty_print_binary(stream, res, GROUP_BINARY_BY);
-            break;
-        case 8:
-            pretty_print_octal(stream, res, GROUP_OCTAL_BY);
-            break;
-case 10:
-            pretty_print_decimal(stream, res);
-            break;
-        case 16:
-            pretty_print_hexadecimal(stream, res, GROUP_HEX_BY, caps);
-            break;
-        default:
-            break;
-    }
-
-    if (add_newline) {
-        fprintf(stream, "\n");
-    }
-}
-
-void pretty_print_all_bases(FILE *stream, value_t res, bool caps) {
-    if (!stream) {
-        return;
-    }
-    fprintf(stream, "Binary:         ");
-    pretty_print_value(stream, res, 2, caps, true);
-
-    fprintf(stream, "Octal:          ");
-    pretty_print_value(stream, res, 8, caps, true);
-
-    fprintf(stream, "Decimal:        ");
-    pretty_print_value(stream, res, 10, caps, true);
-
-    fprintf(stream, "Hexadecimal:    ");
-    pretty_print_value(stream, res, 16, caps, true);
-}
-
-
 int print_group_zero_padding(FILE *stream, int digits, int group_by) {
     if (!stream) {
         return -1;
@@ -91,7 +47,7 @@ int print_group_zero_padding(FILE *stream, int digits, int group_by) {
 }
 
 
-void pretty_print_binary(FILE *stream, value_t res, int group_by) {
+void pretty_print_binary(FILE *stream, value_t res, int group_by, bool add_newline) {
     if (!stream) {
         return;
     }
@@ -118,10 +74,13 @@ void pretty_print_binary(FILE *stream, value_t res, int group_by) {
             fputc(' ', stream);
         }
     }
+    if (add_newline) {
+        fprintf(stream, "\n");
+    }
 }
 
 
-void pretty_print_octal(FILE *stream, value_t res, int group_by) {
+void pretty_print_octal(FILE *stream, value_t res, int group_by, bool add_newline) {
     if (!stream) {
         return;
     }
@@ -145,10 +104,13 @@ void pretty_print_octal(FILE *stream, value_t res, int group_by) {
         }
     }
 
+    if (add_newline) {
+        fprintf(stream, "\n");
+    }
 }
 
 
-void pretty_print_decimal(FILE *stream, value_t res) {
+void pretty_print_decimal(FILE *stream, value_t res, bool add_newline) {
     if (!stream) {
         return;
     }
@@ -164,6 +126,9 @@ void pretty_print_decimal(FILE *stream, value_t res) {
         }
     }
     fprintf(stream, "%" PRIu64, rem); /* Least significant thousand doesn't have a comma */
+    if (add_newline) {
+        fprintf(stream, "\n");
+    }
 }
 
 
@@ -187,7 +152,7 @@ bool pp_decimal_helper(FILE *stream, value_t quotient) {
 }
 
 
-void pretty_print_hexadecimal(FILE *stream, value_t res, int group_by, bool caps) {
+void pretty_print_hexadecimal(FILE *stream, value_t res, int group_by, bool caps, bool add_newline) {
     if (!stream) {
         return;
     }
@@ -209,6 +174,9 @@ void pretty_print_hexadecimal(FILE *stream, value_t res, int group_by, bool caps
             fputc(' ', stream);
         }
     }
+    if (add_newline) {
+        fprintf(stream, "\n");
+    }
 }
 
 
@@ -229,6 +197,7 @@ void raw_print_binary(FILE *stream, value_t res, bool add_newline) {
     if (!stream) {
         return;
     }
+    fprintf(stream, "0b");
     int highest_exp = find_highest_exponent_2(res);
     for (int exp = highest_exp; exp >= 0; exp--) {
         if (res & ((value_t)1 << exp)) {
@@ -249,6 +218,7 @@ void raw_print_octal(FILE *stream, value_t res, bool add_newline) {
     if (!stream) {
         return;
     }
+    fprintf(stream, "0");
     char buf[MAXLEN_OCTAL_STR];
     int digits = get_digits_in_base(res, 8, buf);
     for (int i = digits - 1; i >= 0; i--) {
@@ -277,6 +247,7 @@ void raw_print_hexadecimal(FILE *stream, value_t res, bool caps, bool add_newlin
     if (!stream) {
         return;
     }
+    fprintf(stream, "0x");
     char buf[MAXLEN_HEX_STR];
     int digits = get_digits_in_base(res, 16, buf);
     for (int i = digits - 1; i >= 0; i--) {

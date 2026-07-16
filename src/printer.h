@@ -35,11 +35,6 @@ int get_digits_in_base(value_t res, int base, char *buf);
 */
 int find_highest_exponent_2(value_t res);
 
-/*
-* Prints 'res' in binary, octal, decimal, and hexadecimal base to 'stream'.
-*/
-void pretty_print_all_bases(FILE *stream, value_t res, bool caps);
-
 
 /*
 * Prints group_by - (digits % group_by) zeroes to stream, adding padding zeroes
@@ -57,7 +52,7 @@ int print_group_zero_padding(FILE *stream, int digits, int group_by);
 * The digits of the printer number are arranged in groups of 'group_by' digits and 
 * prefixed by 0b.
 */
-void pretty_print_binary(FILE *stream, value_t res, int group_by);
+void pretty_print_binary(FILE *stream, value_t res, int group_by, bool add_newline);
 
 
 /* Find the number of digits in the largest octal number. Recall one octal digit corresponds to 3 bits */
@@ -67,13 +62,13 @@ void pretty_print_binary(FILE *stream, value_t res, int group_by);
 * Prints 'res' in octal format to 'stream'.
 * The digits are arranged in groups of 'group_by' digits.
 */
-void pretty_print_octal(FILE *stream, value_t res, int group_by);
+void pretty_print_octal(FILE *stream, value_t res, int group_by, bool add_newline);
 
 
 /*
 * Prints in 'res' in decimal format using commas to separate thousands.
 */
-void pretty_print_decimal(FILE *stream, value_t res);
+void pretty_print_decimal(FILE *stream, value_t res, bool add_newline);
 
 
 /*
@@ -95,21 +90,13 @@ bool pp_decimal_helper(FILE *stream, value_t quotient);
 /*
 * Pretty prints 'res' to 'stream' in hexadecimal.
 */
-void pretty_print_hexadecimal(FILE *stream, value_t res, int group_by, bool caps);
+void pretty_print_hexadecimal(FILE *stream, value_t res, int group_by, bool caps, bool add_newline);
 
 
 /*
 * Maps a number 0-15 to a hexadecimal digit 0-F or 0-f depending on 'caps'.
 */
 char num_to_hex_digit(char num, bool caps);
-
-
-/* 
-* Pretty prints a value 'res' to 'stream' in the 'base' number system.
-* If 'caps' is true, it prints the value in caps. If 'add_newline' is true,
-* it prints a newline after the number.
-*/
-void pretty_print_value(FILE* stream, value_t res, int base, bool caps, bool add_newline);
 
 
 /*
@@ -123,6 +110,7 @@ void raw_print_binary(FILE *stream, value_t res, bool add_newline);
 */
 void raw_print_octal(FILE *stream, value_t res, bool add_newline);
 
+
 /*
 * Prints 'res' in decimal to 'stream' without any commas. 
 */
@@ -135,4 +123,3 @@ void raw_print_decimal(FILE *stream, value_t res, bool add_newline);
 void raw_print_hexadecimal(FILE *stream, value_t res, bool caps, bool add_newline);
 
 #endif
-
