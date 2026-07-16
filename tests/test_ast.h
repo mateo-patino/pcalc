@@ -61,6 +61,6 @@ bool test_ast_structure_edge_cases(void);
 /*
 * Test AST error catching (overflow, underflow, etc.)
 */
-bool test_ast_division_by_zero_handling(void);
+bool test_ast_division_by_zero(void);
 
 #endif

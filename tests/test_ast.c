@@ -18,7 +18,8 @@ static const test_case_t ast_tests[] = {
     TEST(test_ast_structure_medium),
     TEST(test_ast_structure_hard),
     TEST(test_ast_structure_harder),
-    TEST(test_ast_structure_edge_cases)
+    TEST(test_ast_structure_edge_cases),
+    TEST(test_ast_division_by_zero)
 };
 
 
@@ -386,6 +387,38 @@ bool test_ast_structure_edge_cases(void) {
 }
 
 
-bool test_ast_division_by_zero_handling(void) {
+bool test_ast_division_by_zero(void) {
+    ast_status status;
+
+    _evaluate_expression("1 / ( 1 - 1 )", &status);
+    ASSERT_TRUE(status == AST_DIV_BY_ZERO);
+
+    _evaluate_expression(" 1 / ( ( 0xff ) - ( 255 ) )", &status);
+    ASSERT_TRUE(status == AST_DIV_BY_ZERO);
+
+    _evaluate_expression("100 / ( ( 10 - ( 2 * 3 ) ) - 4 )", &status);
+    ASSERT_TRUE(status == AST_DIV_BY_ZERO);
+
+    _evaluate_expression("0x40 / ( ( 0b101 + 03 ) * 2 - 020 )", &status);
+    ASSERT_TRUE(status == AST_DIV_BY_ZERO);
+
+    _evaluate_expression("123 / ( ( 2 + 3 ) * ( 7 - 5 ) - ( 04 + 06 ) )", &status);
+    ASSERT_TRUE(status == AST_DIV_BY_ZERO);
+
+    _evaluate_expression("999 / ( ( 3 * ( 4 + 2 ) ) - ( 0x10 + 02 ) )", &status);
+    ASSERT_TRUE(status == AST_DIV_BY_ZERO);
+
+    _evaluate_expression("7 / ( ( 0b1000 / 2 ) - ( 03 + 01 ) )", &status);
+    ASSERT_TRUE(status == AST_DIV_BY_ZERO);
+
+    _evaluate_expression("42 / ( ( ( 2 + 3 ) * ( 4 + 1 ) ) - ( 0x10 + 0b1001 ) )", &status);
+    ASSERT_TRUE(status == AST_DIV_BY_ZERO);
+
+    _evaluate_expression("88 / ( ( 0x30 - 0b10000 ) / 04 - ( 02 * 04 ) )", &status);
+    ASSERT_TRUE(status == AST_DIV_BY_ZERO);
+
+    _evaluate_expression("123 / ( ( 010 + ( 0x10 - 0b100 ) ) - ( 0b101 * 4 ) )", &status);
+    ASSERT_TRUE(status == AST_DIV_BY_ZERO);
+
     return true;
 }
