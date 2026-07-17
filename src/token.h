@@ -56,6 +56,8 @@ void print_token(const token_t *tok, bool add_newline);
 
 /* Supported operations */
 typedef enum {
+    OR,
+    XOR,
     AND,
     ADD,
     SUB,
@@ -109,4 +111,3 @@ number_t *init_number(value_t value, int base);
 
 
 #endif
-

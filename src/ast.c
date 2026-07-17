@@ -121,6 +121,24 @@ value_t evaluate_ast_helper(const ASTNode *root, ast_status *status) {
 
     value_t retval;
     switch (op) {
+        case OR:
+            retval = op_bitwise_or(left, right, status);
+            if (status && *status != AST_OK) {
+                return (value_t)0;
+            }
+            break;
+        case XOR:
+            retval = op_bitwise_xor(left, right, status);
+            if (status && *status != AST_OK) {
+                return (value_t)0;
+            }
+            break;
+        case AND:
+            retval = op_bitwise_and(left, right, status);
+            if (status && *status != AST_OK) {
+                return (value_t)0;
+            }
+            break;
         case ADD:
             retval = op_add(left, right, status);
             if (status && *status != AST_OK) {
@@ -257,6 +275,24 @@ bool has_any_operations(const token_t *tokens, int low, int high) {
         }
     }
     return false;
+}
+
+
+value_t op_bitwise_or(value_t left, value_t right, ast_status *status) {
+    if (status) { *status = AST_OK; } /* OR will always succeed */
+    return left | right;
+}
+
+
+value_t op_bitwise_xor(value_t left, value_t right, ast_status *status) {
+    if (status) { *status = AST_OK; } /* XOR will always succeed */
+    return left ^ right;
+}
+
+
+value_t op_bitwise_and(value_t left, value_t right, ast_status *status) {
+    if (status) { *status = AST_OK; } /* AND will always succeed */
+    return left & right;
 }
 
 

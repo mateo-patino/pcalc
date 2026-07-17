@@ -136,6 +136,22 @@ bool has_any_operations(const token_t *tokens, int low, int high);
 */
 void print_ast_error(ast_status code, char *msg);
 
+
+/*
+* Returns 'left' | 'right'. There is no error check needed for bitwise OR.
+*/
+value_t op_bitwise_or(value_t left, value_t right, ast_status *status);
+
+/*
+* Returns 'left' ^ 'right'. There is no error check needed for bitwise XOR.
+*/
+value_t op_bitwise_xor(value_t left, value_t right, ast_status *status);
+
+/*
+* Returns 'left' & 'right'. There is no error check needed for bitwise AND.
+*/
+value_t op_bitwise_and(value_t left, value_t right, ast_status *status);
+
 /* 
 * Returns 'left' + 'right' if the addition does not result in overflow.
 */

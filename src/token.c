@@ -8,6 +8,8 @@
 #include <string.h>
 
 const char* const operation_labels[NUM_OP][SYNONYMS_PER_OP] = {
+    [OR] = {"or", "|", "bitor"},
+    [XOR] = {"xor", "^", "bitxor"},
     [AND] = {"and", "&", "bitand"},
     [ADD] = {"add", "plus", "+"},
     [SUB] = {"sub", "minus", "-"},
@@ -17,6 +19,8 @@ const char* const operation_labels[NUM_OP][SYNONYMS_PER_OP] = {
 
 
 const char op_arity[NUM_OP] = {
+    [OR] = 2,
+    [XOR] = 2,
     [AND] = 2,
     [ADD] = 2,
     [SUB] = 2,
@@ -29,6 +33,8 @@ const char op_arity[NUM_OP] = {
 * The precedence levels here are identical to those specified by the C standard whenever applicable.
 */
 const char op_precedence[NUM_OP] = {
+    [OR] = 5,
+    [XOR] = 6,
     [AND] = 7,
     [ADD] = 11,
     [SUB] = 11,
@@ -38,6 +44,8 @@ const char op_precedence[NUM_OP] = {
 
 
 const associativity op_associativity[NUM_OP] = {
+    [OR] = ASSOC_LEFT,
+    [XOR] = ASSOC_LEFT,
     [AND] = ASSOC_LEFT,
     [ADD] = ASSOC_LEFT,
     [SUB] = ASSOC_LEFT,
@@ -142,6 +150,12 @@ void print_token(const token_t *tok, bool add_newline) {
         operator_t *oper = (operator_t *)tok->obj;
         operation_type op = oper->op;
         switch(op) {
+            case OR:
+                fprintf(stdout, "OR");
+                break;
+            case XOR:
+                fprintf(stdout, "XOR");
+                break;
             case AND:
                 fprintf(stdout, "AND");
                 break;
@@ -184,4 +198,3 @@ void print_token(const token_t *tok, bool add_newline) {
         fprintf(stdout, "\n");
     }
 }
-
