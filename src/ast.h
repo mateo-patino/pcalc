@@ -14,7 +14,7 @@ typedef enum {
     AST_EXPECTED_OPERATOR,
     AST_UNKNOWN_OPERATION,
     AST_MALLOC_FAILURE
-} ast_status; 
+} ast_status;
 
 
 /* AST node */
@@ -129,6 +129,12 @@ void free_subtree(ASTNode *node);
 * contaiing the indices [low, high].
 */
 bool has_any_operations(const token_t *tokens, int low, int high);
+
+
+/*
+* Returns true if 'token' is a unary operator.
+*/
+bool is_unary_operator(const token_t *token);
 
 
 /* 

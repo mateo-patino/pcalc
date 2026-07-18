@@ -8,18 +8,53 @@
 #include <limits.h>
 
 
+
+/*
+* Unary operators only have one child. The other child will point to this sentinel object.
+* This object shall never be dereferenced or inspected. 
+*/
+static ASTNode unary_child_sentinel;
+#define UNARY_OPERATOR_CHILD (&unary_child_sentinel)
+
+
+bool is_unary_operator(const token_t *token) {
+    return token && token->type == OPERATOR && ((operator_t *)token->obj)->arity == 1;
+}
+
+
 ASTNode *init_ast_node(const token_t *tok, ASTNode *left, ASTNode *right) {
     ASTNode *node = malloc(sizeof(ASTNode));
-    if (!node) {
+    if (!node || !tok) {
         return NULL;
     }
     node->token = tok;
+    /*
+    * If the token is a unary operator, we set one child pointer to UNARY_OPERATOR_CHILD (a sentinel value)
+    * depending on the operator's associativity. If the token is a binary operator or number, we simply set
+    * the children pointers to the arguments provided by the caller.
+    */
+    if (is_unary_operator(tok)) {
+        operation_type op = ((operator_t *)tok->obj)->op;
+        switch (op_associativity[op]) {
+            case ASSOC_LEFT:
+                node->left = left;
+                node->right = UNARY_OPERATOR_CHILD;
+                break;
+            case ASSOC_RIGHT:
+                node->left = UNARY_OPERATOR_CHILD;
+                node->right = right;
+                break;
+            default:
+                break;
+        }
+        return node; 
+    }
+
     node->left = left;
     node->right = right;
 
-    return node;
+    return node;   
 }
-
 
 ASTNode *create_ast_from_tokens(const token_t *tokens, size_t tc, ast_status *status) {
     if (!tokens) {
