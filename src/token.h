@@ -59,6 +59,7 @@ typedef enum {
     OR,
     XOR,
     AND,
+    LSHIFT,
     ADD,
     SUB,
     MUL,
