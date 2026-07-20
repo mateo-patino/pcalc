@@ -61,7 +61,7 @@ Base 10:       1,023
 Base 16:       0x3ff
 ```
 
-To group octal and hexadecimal digits, use the options `-o` and `-x`, respectively. Below we group hexadecimal by 2 digits and octal by 3 digits because these groups map to 8 and 9 bits, respectively, and most programmers visualize numbers this way.
+To group octal and hexadecimal digits, use the options `-o` and `-x`, respectively. Below we group hexadecimal by 2 digits and octal by 3 digits because these groupings map to 8 and 9 bits, respectively, and most programmers visualize numbers this way.
 
 ```sh
 $ ./bitpeek -b 4 -x 2 -o 3 "1024 - 1"
@@ -70,7 +70,11 @@ Base 8:        0 001 777
 Base 10:       1,023
 Base 16:       0x 03 ff
 ```
-An argument of 1 prints a whitespace between every digit as so,
+If you struggle to count the number of digits in a number, an argument of 1 prints a whitespace between every digit as so,
 ```sh
-$ ./bitpeek -b 1 -o 1 -x 1 "
+$ ./bitpeek -b 1 -o 1 -x 1 "( 1 << 10 ) - 1"
+Base 2:        0b 1 1 1 1 1 1 1 1 1 1
+Base 8:        0 1 7 7 7
+Base 10:       1,023
+Base 16:       0x 3 f f
 ```
