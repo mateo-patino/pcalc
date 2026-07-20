@@ -10,20 +10,20 @@ It is especially designed for students learning about binary, octal, and hexadec
 
 ```sh
 $ ./bitpeek "10 + 20"
-Base 2:        0b11110
-Base 8:        036
-Base 10:       30
-Base 16:       0x1e
+    Base 2:        0b11110
+    Base 8:        036
+    Base 10:       30
+    Base 16:       0x1e
 ```
 
 Bitwise operations (AND, XOR, OR, NOT, and shifts) are supported. These operations follow the precedence and associativity rules of the C programming language.
 
 ```sh
 $ ./bitpeek "1 << 3"
-Base 2:        0b1000
-Base 8:        010
-Base 10:       8
-Base 16:       0x8
+    Base 2:        0b1000
+    Base 8:        010
+    Base 10:       8
+    Base 16:       0x8
 ```
 Every logical token in the expression must be surrounded by whitespaces so that "2 * ( 1 + 1 )" is a valid expression but "2 * (1 + 1)" is not. In other words, all parentheses, operators, and operands must be separated by whitespaces.
 
@@ -31,10 +31,10 @@ Instead of evaluation a mathematical expression, you can pass a single number in
 
 ```sh
 $ ./bitpeek "0xff"
-Base 2:        0b11111111
-Base 8:        0377
-Base 10:       255
-Base 16:       0xff
+    Base 2:        0b11111111
+    Base 8:        0377
+    Base 10:       255
+    Base 16:       0xff
 ```
 
 ## Binary, Octal, and Hex Literals
@@ -43,10 +43,10 @@ Base 16:       0xff
 
 ```sh
 $ ./bitpeek "0b1010 + 010 + 67 + 0xff"
-Base 2:        0b101110101
-Base 8:        0565
-Base 10:       373
-Base 16:       0x175
+    Base 2:        0b101110101
+    Base 8:        0565
+    Base 10:       373
+    Base 16:       0x175
 ```
 
 ## Grouping
@@ -55,26 +55,26 @@ A fundamental idea in computer science is that **four binary digits represent on
 
 ```sh
 $ ./bitpeek -b 4 "1023"
-Base 2:        0b 0011 1111 1111
-Base 8:        01777
-Base 10:       1,023
-Base 16:       0x3ff
+    Base 2:        0b 0011 1111 1111
+    Base 8:        01777
+    Base 10:       1,023
+    Base 16:       0x3ff
 ```
 
 To group octal and hexadecimal digits, use the options `-o` and `-x`, respectively. Below we group hexadecimal by 2 digits and octal by 3 digits because these groupings map to 8 and 9 bits, respectively, and most programmers visualize numbers this way.
 
 ```sh
 $ ./bitpeek -b 4 -x 2 -o 3 "1024 - 1"
-Base 2:        0b 0011 1111 1111
-Base 8:        0 001 777
-Base 10:       1,023
-Base 16:       0x 03 ff
+    Base 2:        0b 0011 1111 1111
+    Base 8:        0 001 777
+    Base 10:       1,023
+    Base 16:       0x 03 ff
 ```
 If you struggle to count the number of digits in a number, an argument of 1 prints a whitespace between every digit as so,
 ```sh
 $ ./bitpeek -b 1 -o 1 -x 1 "( 1 << 10 ) - 1"
-Base 2:        0b 1 1 1 1 1 1 1 1 1 1
-Base 8:        0 1 7 7 7
-Base 10:       1,023
-Base 16:       0x 3 f f
+    Base 2:        0b 1 1 1 1 1 1 1 1 1 1
+    Base 8:        0 1 7 7 7
+    Base 10:       1,023
+    Base 16:       0x 3 f f
 ```
