@@ -25,7 +25,7 @@ $ ./bitpeek "1 << 3"
     Base 10:       8
     Base 16:       0x8
 ```
-`bitpeek` requires that **every logical token in an expression must be surrounded by whitespaces** so that "2 * ( 1 + 1 )" is a valid expression but "2 * (1 + 1)" is not. In other words, all parentheses, operators, and operands must be separated by whitespaces.
+`bitpeek` requires that **every logical token in an expression is surrounded by whitespaces** so that "2 * ( 1 + 1 )" is a valid expression but "2 * (1 + 1)" is not. In other words, all parentheses, operators, and operands must be separated by whitespaces.
 
 Instead of evaluation a mathematical expression, you can **pass a single number** into `bitpeek` to see the number represented in the different bases.
 
