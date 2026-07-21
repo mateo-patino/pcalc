@@ -15,7 +15,7 @@ if [ ! -x "./bitpeek" ]; then
     exit 1
 fi
 
-# Table of expressions to feed bitpeek
+# Table of expressions to feed bitpeek. These include successful and unsuccessful execution paths.
 expressions=(
     "1 + 1"
     "1 + 0x1 + 01 + 0b1"
@@ -62,6 +62,48 @@ expressions=(
     "1 / 0"
     "( 0xff + 01 ) / 0x0"
     "0b1010 ^ 03 / 00"
+
+    # AST_INTEGER_OVERFLOW
+    "18446744073709551615 + 1"
+    "0xffffffffffffffff + 0b1"
+    "0x8000000000000000 * 02"
+    "( 0x7fffffffffffffff + 01 ) * 02"
+    "( 0xffffffffffffffff / 02 ) * 03"
+
+    # AST_INTEGER_UNDERFLOW
+    "0 - 1"
+    "0x10 - 0b10001"
+    "( 02 + 03 ) - ( 0x1 + 0b101 )"
+    "( 0x100 / 04 ) - ( 0b1000000 + 01 )"
+    "( 0xffffffffffffffff - 0x10 ) - ( 0xffffffffffffffff - 0x0f )"
+
+    # AST_DIV_BY_ZERO
+    "1 / ( 1 - 1 )"
+    "0x40 / ( ( 0b101 + 03 ) * 02 - 020 )"
+    "123 / ( ( 2 + 3 ) * ( 7 - 5 ) - ( 04 + 06 ) )"
+    "999 / ( ( 3 * ( 4 + 2 ) ) - ( 0x10 + 02 ) )"
+    "0xffff / ( ( 0x10 >> 01 ) - 010 )"
+
+    # AST_SHIFT_COUNT_TOO_LARGE
+    "1 << 64"
+    "0xffff >> 0x40"
+    "0b1010 << ( 0x20 + 0x20 )"
+    "( 0x1 << ( 02 * 040 ) )"
+    "( 0xffff rshift ( 0b1000000 | 01 ) )"
+
+    # AST_INVALID_EXPRESSION
+    "3 +"
+    "1 + +"
+    "* 2"
+    "1 2"
+    "not"
+
+    # Overall edge cases
+    ""
+    "0"
+    "( ( ( 0x2a ) ) )"
+    "not ~ bitnot"
+    "( )"
 )
 
 # valgrind's exit code if a memory error is detected
