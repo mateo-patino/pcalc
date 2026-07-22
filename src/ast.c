@@ -66,6 +66,11 @@ ASTNode *create_ast_from_tokens(const token_t *tokens, size_t tc, ast_status *st
 
 
 ASTNode *create_ast_helper(const token_t *tokens, int low, int high, ast_status *status) {
+
+    /* 
+    * If a previous recursive call to create_ast_helper set status != ASK_OK, return without
+    * building the rest of the tree.
+    */
     if (status && *status != AST_OK) {
         return NULL;
     }
@@ -112,13 +117,8 @@ ASTNode *create_ast_helper(const token_t *tokens, int low, int high, ast_status 
 
     /* If last op is not unary, it must be binary, so recurse on left and right subarrays */
     left = create_ast_helper(tokens, low, lo_index-1, status);
-    if (!left || (status && *status != AST_OK)) {
-        return NULL;
-    }
     right = create_ast_helper(tokens, lo_index+1, high, status);
-    if (!right || (status && *status != AST_OK)) { 
-        return NULL;
-    }
+
     new_node = init_ast_node(tokens+lo_index, left, right);
 
 RETURN_NEW_NODE:
