@@ -39,7 +39,7 @@ $ ./bitpeek "1023"
 
 ## Supported Operators
 
-`bitpeek` supports the following operators. They are listed from **highest to lowest precedence**. Operators with the same precedence are evaluated from left to right, except for NOT, which is evaluated from right to left. All operators have **aliases that can be used interchangeably** in the command-line.
+`bitpeek` supports the following operators. They are listed from **highest to lowest precedence**. Operators with the same precedence are evaluated from left to right, **except for NOT**, which is evaluated from right to left. All operators have **aliases that can be used interchangeably** in the command-line.
 
 | Operator | Aliases | Precedence | Associativity |
 | --- | --- | --- | --- |
