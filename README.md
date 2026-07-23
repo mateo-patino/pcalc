@@ -67,7 +67,7 @@ $ ./bitpeek "( ( 0b1010 << 1 ) & 0xff ) + 0777"
     Base 16:       0x213
 ```
 
-## Grouping
+## Digit Grouping
 
 A fundamental idea in computer science is that **four binary digits represent one hexadecimal digit**. Hence, it is conventional to write binary numbers in **groups of four digits**. `bitpeek` lets you do this via command-line arguments. For example, to group binary digits in sets of four bits, pass `-b 4` to the program.
 
